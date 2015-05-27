@@ -32,6 +32,6 @@
 		<img src="img/HBuilder.png" data-src="img/2009年作品.jpg" class="lazy" />
 		
 	</body>
-	<script src="js/lazy-load.js" type="text/javascript"></script>
+	<script src="js/leawee-lazy-load.js" type="text/javascript"></script>
 	
 </html>
