@@ -1,29 +1,45 @@
-var loaded = []; /*標記圖片是否加載*/
-var obj = document.getElementsByClassName("lazy");/*懶惰加載圖片*/
-for (var i = 0; i < obj.length; i++) {
-	loaded.push(false);
-}
-var clientHight = window.innerHeight || document.documentElement.clientHeight;/*瀏覽器用戶窗口高度*/
-
-function scrollHandler(index) {
-	var flag = true;/*標識元素是否滿足顯示，一旦出現不滿足顯示，則後面的元素都不滿足顯示，停止循環*/
- 	var scrollTop = document.body.scrollTop || document.documentElement.scrollTop; /*滚动离顶部距离*/
-	for (var i = index; i < obj.length && flag; i++) {
-		var offset = obj[i].offsetTop;/*元素到頂部的偏移量*/
-		if (scrollTop + clientHight > offset) {
-			obj[i].src = obj[i].getAttribute("data-src");/*把圖片的真正地址賦給圖片*/
-			loaded[i] = true;/*標識圖片已經加載*/
-		} else {
-			flag = false;
+var imgs = document.getElementsByClassName("lazy"); /*懒惰加载图片*/
+	var imgsLen = imgs.length;
+	var unloaded = imgsLen; /*标记还有多少个图片没有加载*/
+	var clientHight = window.innerHeight || document.documentElement.clientHeight; /*浏览器用户可视窗口高度*/
+	
+	/*给图片设置真正的src*/
+	function setImgSrc (index) {
+		imgs[index].src = imgs[index].getAttribute("data-src"); /*取图片真正的地址*/
+		--unloaded;
+	}
+	
+	/*滚动事件处理*/
+	function scrollHandler(index) {
+		var scrollTop = document.body.scrollTop || document.documentElement.scrollTop; /*滚动离顶部距离*/
+		for (var i = index; i < imgsLen; i++) {
+			var offset = imgs[i].offsetTop; /*元素到顶部的偏移量*/
+			if (scrollTop + clientHight > offset) {
+				setImgSrc(i);
+			} else {
+				break;
+			}
 		}
 	}
-}
-
-function myScrollListener () {
-	var start = loaded.indexOf(false);/*查找第一個沒有加載的圖片的位置*/
-	if (start > -1) {
-		scrollHandler(start);
+	
+	/*监听滚动事件*/
+	function myScrollListener() {
+		var start = imgsLen-unloaded; /*查找第一个没有加载的图片的位置*/
+		if (unloaded > 0) {
+			scrollHandler(start);
+		}
 	}
-}
+
+	/*第一次加载加载页面的时候加载出现在用户视线里的图片*/
+	function firstLoad() {
+		for (var i = 0; i < imgsLen; i++) {
+			var top = imgs[i].offsetTop;
+			if (top < clientHight) {/*图片到顶部的位置如果小于客户端可视窗口的高度，则说明图片显示出来了*/
+				setImgSrc(i);
+			}else{
+				break;
+			}
+		}
+	}
 
 
